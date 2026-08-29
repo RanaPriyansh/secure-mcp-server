@@ -34,7 +34,7 @@ jobs:
     
     - name: Check for forbidden strings
       run: |
-        if grep -r -i "conexus\|gidney\|lobster\|tara@" --exclude-dir=.git .; then
+        if grep -r -i "conexus\|gidney\|lobster\|tara@" --exclude-dir=.git --exclude-dir=.github .; then
           echo "ERROR: Found forbidden strings in repository"
           exit 1
         fi
