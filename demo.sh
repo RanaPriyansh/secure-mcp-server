@@ -15,7 +15,7 @@ echo "4. Allowed domains: $MCP_ALLOWED_DOMAINS"
 echo
 
 echo "5. Running tests..."
-pytest -v
+python3 -m pytest -v
 
 echo
 echo "=== Demo Complete ==="
