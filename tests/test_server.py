@@ -1,8 +1,9 @@
 import pytest
+import os
 import tempfile
 from pathlib import Path
 from secure_mcp_server.server import create_server
-from secure_mcp_server.config import Config
+from secure_mcp_server.config import Config, get_config
 
 
 @pytest.fixture
@@ -57,3 +58,16 @@ def test_server_enforces_rate_limiting(test_config, tmp_path):
     
     with pytest.raises(Exception, match="Rate limit"):
         server.call_tool("read_file", {"path": str(test_file)})
+
+
+def test_server_initialization_fails_without_bearer_token():
+    """Server initialization must fail when MCP_BEARER_TOKEN is not set."""
+    env = os.environ.copy()
+    if "MCP_BEARER_TOKEN" in os.environ:
+        del os.environ["MCP_BEARER_TOKEN"]
+    
+    with pytest.raises(ValueError, match="MCP_BEARER_TOKEN"):
+        get_config()
+    
+    os.environ.clear()
+    os.environ.update(env)
