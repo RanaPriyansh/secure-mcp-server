@@ -9,7 +9,7 @@ description = "A secure MCP server with authentication, rate limiting, and safe 
 authors = [{name = "Priyansh Rana"}]
 license = {text = "MIT"}
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
     "mcp>=1.0.0",
     "httpx>=0.25.0",

@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.10", "3.11", "3.12"]
     
     steps:
     - uses: actions/checkout@v4
@@ -34,7 +34,7 @@ jobs:
     
     - name: Check for forbidden strings
       run: |
-        if grep -r -i "conexus\|gidney\|lobster\|tara@" --exclude-dir=.git .; then
+        if grep -r -i "conexus\|gidney\|lobster\|tara@" --exclude-dir=.git --exclude-dir=.github .; then
           echo "ERROR: Found forbidden strings in repository"
           exit 1
         fi

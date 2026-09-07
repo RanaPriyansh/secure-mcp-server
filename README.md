@@ -1,27 +1,31 @@
 # Secure MCP Server
 
-A production-ready Python MCP server with bearer token authentication, rate limiting, and secure file/HTTP tools.
+A Python MCP server with bearer token authentication, rate limiting, and allowlisted file/HTTP tools.
 
-## Features
+## What This Is
 
-- **Fail-closed authentication**: Requires `MCP_BEARER_TOKEN` environment variable
-- **Per-session rate limiting**: Token bucket algorithm prevents abuse
-- **Secure file operations**: Path allowlist with traversal protection
-- **Secure HTTP operations**: Domain allowlist with HTTPS-only enforcement
-- **Structured logging**: JSON logs with automatic secret redaction
-- **No exposed secrets**: Structured errors without stack traces
+Bearer auth + token-bucket rate limiting + path/domain allowlists for MCP tools. Fails closed: won't start without `MCP_BEARER_TOKEN`.
 
-## Security Model
+## What This Is NOT
 
-This server provides defense-in-depth for MCP tool access, but **is not a kernel-level sandbox**. It:
+**Not a sandbox.** This runs in your process space with your privileges. It will:
 
-- ✅ Validates bearer tokens (fail-closed)
-- ✅ Enforces path and domain allowlists
-- ✅ Blocks path traversal attempts
-- ✅ Enforces file size limits
-- ✅ Rate limits per session
-- ❌ Does NOT provide process isolation
-- ❌ Does NOT protect against malicious code execution
+- ✅ Block requests without valid bearer token (fail-closed at startup)
+- ✅ Rate-limit requests per session (token bucket)
+- ✅ Enforce path and domain allowlists
+- ✅ Block path traversal and symlink escapes
+- ✅ Enforce file size limits
+- ✅ Redact secrets from logs
+
+But it will **not**:
+
+- ❌ Provide process isolation or syscall filtering
+- ❌ Prevent execution of malicious code in tool paths
+- ❌ Protect against kernel exploits
+- ❌ Stop filesystem access outside Python (if attacker gets code exec)
+- ❌ Prevent memory corruption attacks
+
+**Threat model**: A misbehaving MCP client that follows the protocol but tries to read/write wrong paths or hit wrong domains. Not a defense against arbitrary code execution or kernel-level attacks.
 
 ## Installation
 
@@ -111,11 +115,7 @@ Run with coverage:
 pytest --cov=secure_mcp_server --cov-report=html
 ```
 
-All tests pass on a fresh clone without requiring:
-- Production bearer tokens (tests use fixtures)
-- Real network access (HTTP tests are mocked)
-- GPU or specialized hardware
-- External services
+Tests run in-process with fixtures. No GPU, no network, no production secrets needed.
 
 ## Development
 
